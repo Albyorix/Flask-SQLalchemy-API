@@ -2,118 +2,118 @@ from requests import get, post, put, delete
 import sys
 from ast import literal_eval
 
-############################################
-###          Prerequisites               ###
-############################################
 
-base_url = "http://127.0.0.1:5000/api/v1/"
-# Create a company
-company_url = base_url + "company"
-osl = {"name": "Old Street Labs"}
-r = post(company_url, json=osl)
-if not r.status_code == 200:
-    print "Could not create a company"
-    print r.text
-    sys.exit(1)
-dico = literal_eval(r.text)
-osl_id = dico["id"]
-print "OSL:", dico
+def test_OSL():
+    ############################################
+    ###          Prerequisites               ###
+    ############################################
+    base_url = "http://127.0.0.1:5000/api/v1/"
+    # Create a company
+    company_url = base_url + "company"
+    osl = {"name": "Old Street Labs"}
+    r = post(company_url, json=osl)
+    assert(r.status_code == 200)
+    dico = literal_eval(r.text)
+    osl_id = dico["id"]
+    assert(osl_id == 1)
 
-# Create another company
-eki = {"name": "eki"}
-r = post(company_url, json=eki)
-dico = literal_eval(r.text)
-eki_id = dico["id"]
-print "EKI:", dico
+    # Create another company
+    eki = {"name": "eki"}
+    r = post(company_url, json=eki)
+    dico = literal_eval(r.text)
+    eki_id = dico["id"]
+    assert(eki_id == 2)
 
+    # Create a user
+    user_url = base_url + "user"
+    mike = {"name": "mike",
+            "email": "mike@osl.com",
+            "company_id": osl_id}
+    r = post(user_url, json=mike)
+    assert(r.status_code == 200)
+    dico = literal_eval(r.text)
+    mike_id = dico["id"]
+    assert(mike_id == 1)
 
-# Create a user
-user_url = base_url + "user"
-mike = {"name": "mike",
-        "email": "mike@osl.com",
-        "company_id": osl_id}
-r = post(user_url, json=mike)
-if not r.status_code == 200:
-    print "Could not create a user"
-    print r.text
-    sys.exit(1)
-dico = literal_eval(r.text)
-mike_id = dico["id"]
-print "MIKE:", dico
+    # Create 3 other users
+    john = {"name": "john",
+            "email": "john@osl.com",
+            "company_id": osl_id}
+    r = post(user_url, json=john)
+    dico = literal_eval(r.text)
+    john_id = dico["id"]
+    assert(john_id == 2)
 
-# Create 3 other users
-john = {"name": "john",
-        "email": "john@osl.com",
-        "company_id": osl_id}
-r = post(user_url, json=john)
-dico = literal_eval(r.text)
-john_id = dico["id"]
-print "JOHN:", dico
-
-fred = {"name": "fred",
-        "email": "fred@eki.com",
-        "company_id": eki_id}
-r = post(user_url, json=fred)
-dico = literal_eval(r.text)
-fred_id = dico["id"]
-print "FRED:", dico
-
-hugo = {"name": "hugo",
-        "email": "hugo@eki.com",
-        "company_id": eki_id}
-r = post(user_url, json=hugo)
-dico = literal_eval(r.text)
-hugo_id = dico["id"]
-print "HUGO:", dico
-
-
-############################################
-###          Requirements                ###
-############################################
-
-# Create a new team
-team_url = base_url + "team"
-osl_eng = {"name": "engineering",
-           "members": [{"id": mike_id},
-                       {"id": john_id}],
-           "company_id": osl_id}
-r = post(team_url, json=osl_eng)
-if not r.status_code == 200:
-    print "Could not create a team"
-    print r.text
-    sys.exit(1)
-dico = literal_eval(r.text)
-osl_eng_id = dico["id"]
-print "OSL ENG:", dico
-
-# Create a second team
-eki_cons = {"name": "consulting",
-            "members": [{"id": fred_id},
-                        {"id": hugo_id}],
+    fred = {"name": "fred",
+            "email": "fred@eki.com",
             "company_id": eki_id}
-r = post(team_url, json=eki_cons)
-dico = literal_eval(r.text)
-eki_cons_id = dico["id"]
-print "EKI CONS:", dico
+    r = post(user_url, json=fred)
+    dico = literal_eval(r.text)
+    fred_id = dico["id"]
+    assert(fred_id == 3)
 
-# View a list of all the teams
-r = get(team_url)
-if not r.status_code == 200:
-    print "Could not list all teams"
-    print r.text
-    sys.exit(1)
-print "ALL TEAMS", r.text
+    hugo = {"name": "hugo",
+            "email": "hugo@eki.com",
+            "company_id": eki_id}
+    r = post(user_url, json=hugo)
+    dico = literal_eval(r.text)
+    hugo_id = dico["id"]
+    assert(hugo_id == 4)
 
-# View a list of all the teams for a specific company
-osl_team_url = company_url + "/" + str(osl_id) + "/team"
-r = get(osl_team_url)
-if not r.status_code == 200:
-    print "Could not list teams from one company"
-    print r.text
-    sys.exit(1)
-print "OSL TEAMS", r.text
+    ############################################
+    ###          Requirements                ###
+    ############################################
 
-# View a specific team
-osl_eng_url = team_url + "/" + str(osl_eng_id) + "/"
-r = get(osl_eng_url)
-print "OSL ENG:", dico
+    # Create a new team
+    team_url = base_url + "team"
+    osl_eng = {"name": "engineering",
+               "members": [{"id": mike_id},
+                           {"id": john_id}],
+               "company_id": osl_id}
+    r = post(team_url, json=osl_eng)
+    assert(r.status_code == 200)
+    dico = literal_eval(r.text)
+    osl_eng_id = dico["id"]
+    assert(osl_eng_id == 1)
+
+    # Create a second team
+    eki_cons = {"name": "consulting",
+                "members": [{"id": fred_id},
+                            {"id": hugo_id}],
+                "company_id": eki_id}
+    r = post(team_url, json=eki_cons)
+    dico = literal_eval(r.text)
+    eki_cons_id = dico["id"]
+    assert(eki_cons_id == 2)
+
+    # View a list of all the teams
+    r = get(team_url)
+    assert(r.status_code == 200)
+    assert(r.text == "[{'company_id': 1,"
+                     " 'name': u'engineering',"
+                     " 'members': [{'id': 1}, {'id': 2}],"
+                     " 'id': 1},"
+                     " {'company_id': 2,"
+                     " 'name': u'consulting',"
+                     " 'members': [{'id': 3}, {'id': 4}],"
+                     " 'id': 2}]")
+
+    # View a list of all the teams for a specific company
+    osl_team_url = company_url + "/" + str(osl_id) + "/team"
+    r = get(osl_team_url)
+    assert(r.status_code == 200)
+    assert(r.text == "[{'company_id': 1,"
+                     " 'name': u'engineering',"
+                     " 'members': [{'id': 1}, {'id': 2}],"
+                     " 'id': 1}]")
+
+    # View a specific team
+    osl_eng_url = team_url + "/" + str(osl_eng_id) + "/"
+    r = get(osl_eng_url)
+    assert(r.text == "{'company_id': 1,"
+                     " 'name': u'engineering',"
+                     " 'members': [{'id': 1}, {'id': 2}],"
+                     " 'id': 1}")
+
+if __name__ == "__main__":
+    test_OSL()

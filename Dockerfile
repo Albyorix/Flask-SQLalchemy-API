@@ -10,7 +10,7 @@ RUN python setup.py develop
 
 ENV PORT 5000
 ENV HOST 0.0.0.0
-ENV FLASK_APP=teams/app.py
+ENV FLASK_APP=app.py
 
 VOLUME ["/opt/code"]
 
